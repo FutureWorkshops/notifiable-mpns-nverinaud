@@ -1,21 +1,22 @@
 ENV['RAILS_ENV'] ||= 'test'
 
 require 'simplecov'
-SimpleCov.start do
-  minimum_coverage 80
-  add_filter "/spec/"
-end
-
 require 'database_cleaner'
 require 'active_record'
 require 'rails'
 require 'notifiable'
-require 'grocer'
-require File.expand_path("../../lib/notifiable/apns/grocer",  __FILE__)
+require 'webmock/rspec'
+require File.expand_path("../../lib/notifiable/mpns/nverinaud",  __FILE__)
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each { |f| require f }
+
+SimpleCov.start do
+  add_filter "/spec/"
+end
 
 db_path = 'spec/support/db/test.sqlite3'
 DatabaseCleaner.strategy = :truncation
+
+Rails.logger = Logger.new(STDOUT)
 
 RSpec.configure do |config|  
   config.mock_with :rspec
@@ -33,26 +34,25 @@ RSpec.configure do |config|
     
     ActiveRecord::Migration.verbose = false
     ActiveRecord::Migrator.migrate "spec/support/db/migrate"
-    
-    @grocer = Grocer.server(port: 2195)
-    @grocer.accept
-    
-    Notifiable.apns_gateway = "localhost"
   }
   
   config.before(:each) {
     DatabaseCleaner.start
-    @grocer.notifications.clear
   }
   
   config.after(:each) {
     DatabaseCleaner.clean
   }
   
-  config.after(:all) {
-    @grocer.close
-    
+  config.after(:all) {    
     # drop the database
     File.delete(db_path)
   }
+end
+
+
+User = Struct.new(:device_token) do
+  def device_tokens
+    [device_token]
+  end
 end
