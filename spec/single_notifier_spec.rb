@@ -15,7 +15,15 @@ describe Notifiable::Mpns::Nverinaud::SingleNotifier do
     
     Notifiable::NotificationDeviceToken.count.should == 1
   end
+  
+  it "de-registers a device on receiving a 404 status from MPNS" do    
+    stub_request(:post, d.token).to_return(:status => 404)
+         
+    m.send_notification(n, d)
+    m.close
+    
+    Notifiable::NotificationDeviceToken.count.should == 0
+    Notifiable::DeviceToken.first.is_valid.should == false
   end
-
   
 end
