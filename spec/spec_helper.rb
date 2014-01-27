@@ -1,6 +1,7 @@
 ENV['RAILS_ENV'] ||= 'test'
 
 require 'simplecov'
+require 'simplecov-rcov'
 require 'database_cleaner'
 require 'active_record'
 require 'rails'
@@ -9,6 +10,7 @@ require 'webmock/rspec'
 require File.expand_path("../../lib/notifiable/mpns/nverinaud",  __FILE__)
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each { |f| require f }
 
+SimpleCov.formatter = SimpleCov::Formatter::RcovFormatter
 SimpleCov.start do
   add_filter "/spec/"
 end
