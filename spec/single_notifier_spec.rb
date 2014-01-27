@@ -11,8 +11,10 @@ describe Notifiable::Mpns::Nverinaud::SingleNotifier do
     stub_request(:post, d.token)
          
     m.send_notification(n, d)
+    m.close
     
-    Notifiable::Notification.count.should == 1
+    Notifiable::NotificationDeviceToken.count.should == 1
+  end
   end
 
   
