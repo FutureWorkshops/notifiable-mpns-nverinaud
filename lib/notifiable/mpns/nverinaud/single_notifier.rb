@@ -8,9 +8,22 @@ module Notifiable
         
         protected 
     			def enqueue(notification, device_token)
+                        
+            data = {}
             
-            options = {content: notification.message}
-            response = MicrosoftPushNotificationService.send_notification device_token.token, :toast, options
+            # title
+            title = notification.provider_value(device_token.provider, :title)
+            data[:title] = title if title   
+                        
+            # content
+            content = notification.provider_value(device_token.provider, :message)
+            data[:content] = content if content    
+            
+            # custom attributes
+            custom_attributes = notification.provider_value(device_token.provider, :params)
+            data.merge!({:params => custom_attributes}) if custom_attributes    
+            
+            response = MicrosoftPushNotificationService.send_notification device_token.token, :toast, data
             
             case response.code.to_i
             when 200              
