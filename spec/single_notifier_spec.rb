@@ -6,8 +6,8 @@ describe Notifiable::Mpns::Nverinaud::SingleNotifier do
   let(:d) { Notifiable::DeviceToken.create(:token => "http://db3.notify.live.net/throttledthirdparty/01.00/123456789123456798", :provider => :mpns) }
   let(:u) { User.new(d) }
   
-  it "sends an mpns notification with a title" do
-    n = Notifiable::Notification.create(:payload => {:mpns => {:title => "A title"}})   
+  it "sends a notification with a title" do
+    n = Notifiable::Notification.create(title: "A title")   
 
     stub_request(:post, d.token)
          
@@ -21,7 +21,7 @@ describe Notifiable::Mpns::Nverinaud::SingleNotifier do
   end
   
   it "sends a single mpns notification with content" do
-    n = Notifiable::Notification.create(:message => "A message")   
+    n = Notifiable::Notification.create(message: "A message")   
     stub_request(:post, d.token)
          
     m.send_notification(n, d)
@@ -34,7 +34,7 @@ describe Notifiable::Mpns::Nverinaud::SingleNotifier do
   end
   
   it "sends custom attributes" do 
-    n = Notifiable::Notification.create(:payload => {:mpns => {:params => {:an_object_id => 123456}}})    
+    n = Notifiable::Notification.create(:params => {:an_object_id => 123456})    
     
     stub_request(:post, d.token) 
          
