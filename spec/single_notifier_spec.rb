@@ -14,7 +14,9 @@ describe Notifiable::Mpns::Nverinaud::SingleNotifier do
     m.send_notification(n, d)
     m.close
     
-    Notifiable::NotificationDeviceToken.count.should == 1
+    Notifiable::NotificationStatus.count.should == 1
+    Notifiable::NotificationStatus.first.status.should == 200
+    
     a_request(:post, d.token)
       .with(:body => "<?xml version=\"1.0\" encoding=\"UTF-8\"?><wp:Notification xmlns:wp=\"WPNotification\"><wp:Toast><wp:Text1>A title</wp:Text1><wp:Text2></wp:Text2><wp:Param></wp:Param></wp:Toast></wp:Notification>")
       .should have_been_made.once
@@ -27,7 +29,9 @@ describe Notifiable::Mpns::Nverinaud::SingleNotifier do
     m.send_notification(n, d)
     m.close
     
-    Notifiable::NotificationDeviceToken.count.should == 1
+    Notifiable::NotificationStatus.count.should == 1
+    Notifiable::NotificationStatus.first.status.should == 200
+    
     a_request(:post, d.token)
       .with(:body => "<?xml version=\"1.0\" encoding=\"UTF-8\"?><wp:Notification xmlns:wp=\"WPNotification\"><wp:Toast><wp:Text1></wp:Text1><wp:Text2>A message</wp:Text2><wp:Param></wp:Param></wp:Toast></wp:Notification>")
       .should have_been_made.once
@@ -41,7 +45,7 @@ describe Notifiable::Mpns::Nverinaud::SingleNotifier do
     m.send_notification(n, d)
     m.close
     
-    Notifiable::NotificationDeviceToken.count.should == 1
+    Notifiable::NotificationStatus.count.should == 1
     a_request(:post, d.token)
       .with(:body => "<?xml version=\"1.0\" encoding=\"UTF-8\"?><wp:Notification xmlns:wp=\"WPNotification\"><wp:Toast><wp:Text1></wp:Text1><wp:Text2></wp:Text2><wp:Param>?an_object_id=123456</wp:Param></wp:Toast></wp:Notification>")
       .should have_been_made.once
@@ -55,7 +59,8 @@ describe Notifiable::Mpns::Nverinaud::SingleNotifier do
     m.send_notification(n, d)
     m.close
     
-    Notifiable::NotificationDeviceToken.count.should == 0
+    Notifiable::NotificationStatus.count.should == 1
+    Notifiable::NotificationStatus.first.status.should == 404
     Notifiable::DeviceToken.first.is_valid.should == false
   end
   
